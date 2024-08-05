@@ -9,20 +9,6 @@ const DatePickerComp = () => {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    const fetchToken = async () => {
-      try {
-        let token = Math.random().toString(36).substr(2);
-        setToken(token);
-        sessionStorage.setItem('token', token);
-      } catch (error) {
-        console.error('Error fetching token:', error);
-      }
-    };
-
-    fetchToken();
-    const intervalId = setInterval(fetchToken, 10 * 60 * 1000); // 10 minutes token refresh
-
-    return () => clearInterval(intervalId);
   }, []);
 
   return (

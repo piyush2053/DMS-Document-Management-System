@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEmail } from "../Store/Provider";
+import { CreateDBSpace, generateToken } from "./Constants/Functions/function";
 
 const Login = () => {
     const { email, setEmail } = useEmail();
@@ -9,8 +10,10 @@ const Login = () => {
 
     const handleSubmit = (e:any) => {
         e.preventDefault();
-        if (password === "Admin@123" && email==="rws@rws.com") {
+        if (password === "Admin@123") {
             navigate("/dashboard");
+            sessionStorage.setItem("token",generateToken(email))
+            CreateDBSpace(email)
         } else {
             alert("Invalid email or password");
         }

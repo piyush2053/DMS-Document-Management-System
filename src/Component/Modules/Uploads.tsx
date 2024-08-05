@@ -1,41 +1,66 @@
 import React, { useState } from "react";
-import { Button, Input, message, Upload } from "antd";
+import { Button, message, Upload } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
-import type { UploadProps } from "antd";
+import { useEmail } from "../../Store/Provider";
+import { URL_SERVICE } from "../Constants/constants";
 
-const { TextArea } = Input;
 const { Dragger } = Upload;
 
-const uploadProps: UploadProps = {
-  name: 'file',
-  multiple: true,
-  action: 'https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload',
-  onChange(info) {
-    const { status } = info.file;
-    if (status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully.`);
-    } else if (status === 'error') {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  },
-  onDrop(e) {
-    console.log('Dropped files', e.dataTransfer.files);
-  },
-};
-
 export default function Uploads() {
-  const [value, setValue] = useState("");
+  const [fileList, setFileList] = useState<any[]>([]);
+  const { email } = useEmail();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleFileChange = (info: any) => {
+    setFileList(info.fileList);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Form submitted!");
+
+    if (!email) {
+      message.error("Email is required.");
+      return;
+    }
+
+    if (fileList.length === 0) {
+      message.error("Please select a file.");
+      return;
+    }
+
+    try {
+      const file = fileList[0].originFileObj; 
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('email', email);
+
+      const response = await fetch(`${URL_SERVICE}/uploadFile`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        message.success(`${file.name} file uploaded successfully.`);
+        console.log(result);
+      } else {
+        const errorText = await response.text();
+        message.error(`File upload failed: ${errorText}`);
+      }
+    } catch (error) {
+      message.error('File upload failed.');
+      console.error('Error uploading file:', error);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <div>
-        {/* Ant Design Upload Component */}
-        <Dragger {...uploadProps} style={{ marginBottom: '16px' }}>
+        <Dragger
+          fileList={fileList}
+          onChange={handleFileChange}
+          beforeUpload={() => false} // Prevent automatic upload by Dragger
+          style={{ marginBottom: '16px' }}
+        >
           <p className="ant-upload-drag-icon">
             <InboxOutlined />
           </p>
@@ -44,16 +69,7 @@ export default function Uploads() {
             Support for a single or bulk upload. Strictly prohibited from uploading suspicious data.
           </p>
         </Dragger>
-
-        <TextArea placeholder="File Name" autoSize className="mb-3 mt-5" />
-        <TextArea
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          placeholder="Description"
-          autoSize={{ minRows: 3, maxRows: 5 }}
-        />
-        <div style={{ margin: '24px 0' }} />
-        <Button type="primary" className="bg-[#007373]" htmlType="submit">
+        <Button type="primary" className="bg-[#007373] mt-5" htmlType="submit">
           Submit
         </Button>
       </div>

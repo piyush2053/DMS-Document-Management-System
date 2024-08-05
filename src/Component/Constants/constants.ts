@@ -1,6 +1,14 @@
 import { FileOutlined, HistoryOutlined, UploadOutlined } from "@ant-design/icons";
 import React from "react";
 
+export const URL_SERVICE = "http://localhost:9000"
+
+export const typeDocs = [
+  {
+    "name": "test",
+    "extension": "test"
+} 
+]
 export const items = [
   {
     key: '1',
