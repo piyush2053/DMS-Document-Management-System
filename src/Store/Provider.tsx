@@ -9,7 +9,7 @@ export const EmailProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [email, setEmail] = useState(() => {
     return localStorage.getItem('email') || '';
   });
-
+console.log(email)
   useEffect(() => {
     localStorage.setItem('email', email);
   }, [email]);

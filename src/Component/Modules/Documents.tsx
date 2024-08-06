@@ -41,7 +41,7 @@ export default function Documents() {
     <div className='animate-fade'>
       <div className='flex justify-start mb-1'>
         <Paragraph className='text-[24px] my-auto'>Your Files</Paragraph>
-        {docs.length > 0 ? null : <Spin className='my-auto ml-4' indicator={<LoadingOutlined spin />} />}
+        {docs.length > 0 ? null : <>{docs.length === 0 ? null :  <Spin className='my-auto ml-4' indicator={<LoadingOutlined spin />} />}</>}
       </div>
       <Divider />
       {docs.length > 0 ?
@@ -50,7 +50,6 @@ export default function Documents() {
             <div key={index} className='border p-2 rounded-lg cursor-pointer hover:scale-110 transition hover:z-50'>
               {getIcon(item.extension)}
               <p className='font-semibold mt-2 text-xs truncate hover:whitespace-normal hover:overflow-visible hover:truncate '>{item.name}</p>
-              {/* <p>{item.extension}</p> */}
             </div>
           ))}
         </div>
