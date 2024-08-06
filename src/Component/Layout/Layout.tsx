@@ -4,7 +4,6 @@ import { items } from '../Constants/constants';
 import Documents from '../Modules/Documents';
 import Upload from '../Modules/Uploads';
 import History from '../Modules/History';
-import { MenuFoldOutlined } from '@ant-design/icons';
 
 const { Content, Footer, Sider } = Layout;
 

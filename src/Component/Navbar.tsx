@@ -6,12 +6,10 @@ import { useEffect, useState } from 'react';
 
 export const Navbar = () => {
   const { email } = useEmail();
-  const [seconds, setSeconds] = useState(0);
   const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setSeconds(prevSeconds => prevSeconds + 1);
       setCurrentTime(new Date().toLocaleTimeString());
     }, 1000);
 

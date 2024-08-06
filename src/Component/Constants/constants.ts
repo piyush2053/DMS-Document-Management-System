@@ -25,8 +25,8 @@ export const items = [
   {
     key: '3',
     icon: React.createElement(HistoryOutlined),
-    label: 'History',
-    path:"/history"
+    label: 'DMS Logs',
+    path:"/logs"
   },
 ];
 
