@@ -16,28 +16,33 @@ export default function Uploads() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     if (!email) {
       message.error("Email is required.");
       return;
     }
-
+  
     if (fileList.length === 0) {
       message.error("Please select a file.");
       return;
     }
-
+  
     try {
-      const file = fileList[0].originFileObj; 
+      const file = fileList[0].originFileObj;
       const formData = new FormData();
       formData.append('file', file);
       formData.append('email', email);
-
+  
+      // Debugging: Log form data
+      Array.from(formData.entries()).forEach(([key, value]) => {
+        console.log(key, value);
+      });
+  
       const response = await fetch(`${URL_SERVICE}/uploadFile`, {
         method: 'POST',
         body: formData,
       });
-
+  
       if (response.ok) {
         const result = await response.json();
         message.success(`${file.name} file uploaded successfully.`);
@@ -51,6 +56,7 @@ export default function Uploads() {
       console.error('Error uploading file:', error);
     }
   };
+  
 
   return (
     <form onSubmit={handleSubmit}>

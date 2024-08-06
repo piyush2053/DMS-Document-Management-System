@@ -4,6 +4,7 @@ import { items } from '../Constants/constants';
 import Documents from '../Modules/Documents';
 import Upload from '../Modules/Uploads';
 import History from '../Modules/History';
+import { MenuFoldOutlined } from '@ant-design/icons';
 
 const { Content, Footer, Sider } = Layout;
 
@@ -42,7 +43,7 @@ const LayoutS: React.FC = () => {
           console.log(collapsed, type);
         }}
       >
-        <Menu className='bg-[#ECEFF1] min-h-[100%]' theme='light' defaultSelectedKeys={['1']} items={items} onClick={handleMenuClick} />
+        <Menu className='bg-[#ECEFF1] min-h-[100%]' theme='light' defaultSelectedKeys={['1']} items={items} onClick={handleMenuClick} expandIcon={<p>aaaaa</p>} />
       </Sider>
       <Layout>
         <Content style={{ margin: '24px 16px 0' }}>
