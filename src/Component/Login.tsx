@@ -48,7 +48,7 @@ const Login = () => {
                             onChange={(e) => setEmail(e.target.value)}
                             onKeyDown={handleKeyDown}
                         />
-                        <label htmlFor="Accenture-id">Accenture ID</label>
+                        <label htmlFor="id">Email ID</label>
                         <button type="button" className="arrow-button" onClick={handleSubmit}>
                             &#x2192;
                         </button>
