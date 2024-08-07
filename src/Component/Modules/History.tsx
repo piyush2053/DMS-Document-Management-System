@@ -1,42 +1,67 @@
-import { Steps } from "antd";
+import { Spin, Steps } from "antd";
 import { useEmail } from "../../Store/Provider";
+import { useEffect, useState } from "react";
+import { getLogs } from "../Constants/Functions/function";
+import { LoadingOutlined } from "@ant-design/icons";
 
-const titles = [
-  "Logged in DMS",
-  "Downloaded File XYZ",
-  "Waiting",
-  "Updated Profile",
-  "Sent Email",
-  "Received Response",
-  "Scheduled Meeting",
-];
+interface LogDetails {
+  originalName?: string;
+  deletedFiles?: string[];
+}
 
-const descriptions = [
-  "User logged into the Document Management System.",
-  "User downloaded the file XYZ successfully.",
-  "User is waiting for the next action.",
-  "User updated their profile information.",
-  "User sent an email to the team.",
-  "User received a response from the client.",
-  "User scheduled a meeting for next week.",
-];
+interface LogEntry {
+  timestamp: string;
+  action: string;
+  details?: LogDetails;
+}
 
-function getRandomItem(arr:any) {
-  return arr[Math.floor(Math.random() * arr.length)];
+function getDescriptionForAction(action: string, details?: LogDetails, timestamp?: string): string {
+  const time = timestamp ? new Date(timestamp).toLocaleTimeString() : "unknown time";
+
+  switch (action) {
+    case "Directory Creation":
+      return `Directory created at ${time}.`;
+    case "List Files":
+      return `Listed files at ${time}.`;
+    case "File Upload":
+      return `Uploaded file ${details?.originalName} at ${time}.`;
+    case "Delete Files":
+      return `Deleted files ${details?.deletedFiles?.join(", ")} at ${time}.`;
+    default:
+      return `Action ${action} performed at ${time}.`;
+  }
 }
 
 export default function History() {
   const { email } = useEmail();
-  const items = Array.from({ length: 3 }, () => ({
-    title: `${email} ${getRandomItem(titles)}`,
-    description: getRandomItem(descriptions),
-  }));
+  const [Logs, setLogs] = useState<LogEntry[]>([]);
+
+  const fetchLogs = async () => {
+    const log = await getLogs(email);
+    setLogs(log);
+  };
+
+  useEffect(() => {
+    fetchLogs();
+  }, [email]);
+
+  const items = Logs.map((log, index) => {
+    const title = `${email} ${log.action === "File Upload" ? "uploaded a file" : log.action.toLowerCase()}`;
+    const description = getDescriptionForAction(log.action, log.details, log.timestamp);
+
+    return {
+      title,
+      description,
+    };
+  });
 
   return (
-    <Steps
-      direction="vertical"
-      current={1}
-      items={items}
-    />
+    <div>
+      {Logs.length > 0 ? (
+        <Steps direction="vertical" current={0} items={items} />
+      ) : (
+        <Spin className="my-auto ml-4" indicator={<LoadingOutlined spin />} />
+      )}
+    </div>
   );
 }

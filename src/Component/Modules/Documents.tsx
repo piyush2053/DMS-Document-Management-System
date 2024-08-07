@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import {  DeleteOutlined, FolderOpenFilled, LoadingOutlined } from '@ant-design/icons';
 import { Button, Divider, Popconfirm, Spin, Tooltip, Typography } from 'antd';
-import { getDocuments } from '../Constants/Functions/function';
+import { deleteDocuments, getDocuments } from '../Constants/Functions/function';
 import { useEmail } from '../../Store/Provider';
 import { typeDocs } from '../Constants/constants';
 import NoFiles from './Chunks/NoFiles';
 
 const { Paragraph } = Typography;
 
-// Define the type for a document
 interface Document {
   name: string;
   extension: string;
@@ -17,6 +16,7 @@ interface Document {
 export default function Documents() {
   const { email } = useEmail();
   const [docs, setDocs] = useState<Document[]>(typeDocs);
+  const [Loading, setLoading] = useState(false);
   const [selectedDocs, setSelectedDocs] = useState<Document[]>([]);
 
   const fetchDocs = async () => {
@@ -41,6 +41,15 @@ export default function Documents() {
       case '.xlsx':
       case '.xls':
         return <img src='https://w7.pngwing.com/pngs/394/915/png-transparent-excel-hd-logo-thumbnail.png' alt='excel' className='h-14' />;
+      case '.rar':
+      case '.zip':
+        return <img src='https://cdn-icons-png.flaticon.com/512/2096/2096910.png' alt='excel' className='h-14' />;
+      case '.xml':
+      case '.xsd':
+        return <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTaQe6oTdrEL230NmZ57GBqZOXXtrytC3xOA&s' alt='excel' className='h-14' />;
+      case '.exe':
+      case '.msi':
+        return <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCmYdCk_1DLxHuphaeZ-lpLO1b0E3zwGRJ-8_krqW6dRHrGP0426DVR6MTasSkJAmwYHs&usqp=CAU' alt='excel' className='h-14' />;
       case '.jpg':
       case '.bitmap':
       case '.jpeg':
@@ -59,11 +68,20 @@ export default function Documents() {
     );
   };
 
-  const handleDeleteSelected = () => {
-    setDocs(prevDocs => prevDocs.filter(doc => !selectedDocs.includes(doc)));
-    setSelectedDocs([]);
-  };
 
+  const handleDeleteSelected = async () => {
+    setLoading(true);
+    try {
+      const fileNames = selectedDocs.map(doc => doc.name);
+      await deleteDocuments(email, fileNames);
+      setDocs(prevDocs => prevDocs.filter(doc => !selectedDocs.includes(doc)));
+      setSelectedDocs([]);
+    } catch (error) {
+      console.error('Failed to delete selected documents');
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className='animate-fade'>
       {docs.length > 0 ?
@@ -84,7 +102,7 @@ export default function Documents() {
                   okText="Yes"
                   cancelText="No"
                 >
-                   <Button type="primary"  icon={<DeleteOutlined />} className='bg-red-500'>{selectedDocs.length}</Button>
+                   <Button type="primary"  icon={<DeleteOutlined />} className='bg-red-500' loading={Loading}>{selectedDocs.length}</Button>
                 </Popconfirm>
                 </Tooltip>
                 )}
@@ -111,3 +129,7 @@ export default function Documents() {
     </div>
   );
 }
+function setLoading(arg0: boolean) {
+  throw new Error('Function not implemented.');
+}
+

@@ -9,13 +9,14 @@ const { Dragger } = Upload;
 export default function Uploads() {
   const [fileList, setFileList] = useState<any[]>([]);
   const { email } = useEmail();
-
+  const [Loading, setLoading] = useState(false)
   const handleFileChange = (info: any) => {
     setFileList(info.fileList);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true)
   
     if (!email) {
       message.error("Email is required.");
@@ -42,14 +43,17 @@ export default function Uploads() {
       });
   
       if (response.ok) {
+        setLoading(Loading)
         const result = await response.json();
         message.success(`${file.name} file uploaded successfully.`);
         console.log(result);
       } else {
+        setLoading(Loading)
         const errorText = await response.text();
         message.error(`File upload failed: ${errorText}`);
       }
     } catch (error) {
+      setLoading(Loading)
       message.error('File upload failed.');
       console.error('Error uploading file:', error);
     }
@@ -74,9 +78,9 @@ export default function Uploads() {
           </p>
         </Dragger>
         <div className="flex justify-center">
-        <Button type="primary" className="bg-[#007373] mt-5" htmlType="submit">
+          {fileList.length > 0 && <Button type="primary" className="bg-[#007373] mt-5" htmlType="submit" loading={Loading}>
           Submit
-        </Button>
+        </Button>}
         </div>
       </div>
     </form>
