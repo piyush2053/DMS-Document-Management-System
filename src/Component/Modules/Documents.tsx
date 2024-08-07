@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { FolderOpenFilled, LoadingOutlined } from '@ant-design/icons';
-import { Divider, Spin, Typography } from 'antd';
+import {  DeleteOutlined, FolderOpenFilled, LoadingOutlined } from '@ant-design/icons';
+import { Button, Divider, Popconfirm, Spin, Tooltip, Typography } from 'antd';
 import { getDocuments } from '../Constants/Functions/function';
 import { useEmail } from '../../Store/Provider';
 import { typeDocs } from '../Constants/constants';
@@ -8,9 +8,16 @@ import NoFiles from './Chunks/NoFiles';
 
 const { Paragraph } = Typography;
 
+// Define the type for a document
+interface Document {
+  name: string;
+  extension: string;
+}
+
 export default function Documents() {
   const { email } = useEmail();
-  const [docs, setDocs] = useState(typeDocs);
+  const [docs, setDocs] = useState<Document[]>(typeDocs);
+  const [selectedDocs, setSelectedDocs] = useState<Document[]>([]);
 
   const fetchDocs = async () => {
     const docs = await getDocuments(email);
@@ -19,10 +26,10 @@ export default function Documents() {
 
   useEffect(() => {
     fetchDocs();
-    // eslint-disable-next-line 
+    // eslint-disable-next-line
   }, [email]);
 
-  const getIcon = (extension: any) => {
+  const getIcon = (extension: string) => {
     switch (extension) {
       case '.docx':
         return <img src='https://cdn-dynmedia-1.microsoft.com/is/content/microsoftcorp/Icon-Word-28x281?resMode=sharp2&op_usm=1.5,0.65,15,0&qlt=100' alt='docx' className='h-14' />;
@@ -44,20 +51,56 @@ export default function Documents() {
     }
   };
 
+  const handleDocClick = (doc: Document) => {
+    setSelectedDocs(prevSelectedDocs =>
+      prevSelectedDocs.includes(doc)
+        ? prevSelectedDocs.filter(item => item !== doc)
+        : [...prevSelectedDocs, doc]
+    );
+  };
+
+  const handleDeleteSelected = () => {
+    setDocs(prevDocs => prevDocs.filter(doc => !selectedDocs.includes(doc)));
+    setSelectedDocs([]);
+  };
+
   return (
     <div className='animate-fade'>
       {docs.length > 0 ?
         <div>
-          <div className='flex justify-start mb-1'>
-            <Paragraph className='text-[24px] my-auto'>Your Files</Paragraph>
-            {docs.length > 0 ? null : <>{docs.length === 0 ? null : <Spin className='my-auto ml-4' indicator={<LoadingOutlined spin />} />}</>}
+          <div className='flex mb-1'>
+            <div className='flex justify-between'>
+              <div className='mr-4'>
+                <Paragraph className='text-[24px] my-auto'>Your Files</Paragraph>
+                {docs.length > 0 ? null : <>{docs.length === 0 ? null : <Spin className='my-auto ml-4' indicator={<LoadingOutlined spin />} />}</>}
+              </div>
+              <div className='my-auto'>
+                {selectedDocs.length > 0 && (
+                  <Tooltip title="Delete Selected Files">
+                  <Popconfirm
+                  title="Delete"
+                  description="Are you sure to delete these files?"
+                  onConfirm={handleDeleteSelected}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                   <Button type="primary"  icon={<DeleteOutlined />} danger>{selectedDocs.length}</Button>
+                </Popconfirm>
+                </Tooltip>
+                )}
+              </div>
+            </div>
           </div>
           <Divider />
           <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-10 gap-4'>
             {docs.map((item, index) => (
-              <div key={index} className='border p-2 rounded-lg cursor-pointer hover:scale-110 transition hover:z-50'>
+              <div
+                key={index}
+                className={`border p-2 rounded-lg cursor-pointer hover:scale-110 transition hover:z-50 ${selectedDocs.includes(item) ? 'border-2 border-blue-400' : ''}`}
+                onClick={() => handleDocClick(item)}
+              >
                 {getIcon(item.extension)}
-                <p className='font-semibold mt-2 text-xs truncate hover:whitespace-normal hover:overflow-visible hover:truncate '>{item.name}</p>
+                <p className='font-semibold mt-2 text-xs truncate hover:whitespace-normal hover:overflow-visible hover:truncate'>{item.name}</p>
               </div>
             ))}
           </div>
