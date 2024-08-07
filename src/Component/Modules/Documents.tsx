@@ -84,7 +84,7 @@ export default function Documents() {
                   okText="Yes"
                   cancelText="No"
                 >
-                   <Button type="primary"  icon={<DeleteOutlined />} danger>{selectedDocs.length}</Button>
+                   <Button type="primary"  icon={<DeleteOutlined />} className='bg-red-500'>{selectedDocs.length}</Button>
                 </Popconfirm>
                 </Tooltip>
                 )}
@@ -96,7 +96,7 @@ export default function Documents() {
             {docs.map((item, index) => (
               <div
                 key={index}
-                className={`border p-2 rounded-lg cursor-pointer hover:scale-110 transition hover:z-50 ${selectedDocs.includes(item) ? 'border-2 border-blue-400' : ''}`}
+                className={`border p-2 rounded-lg cursor-pointer hover:scale-110 transition hover:z-50 ${selectedDocs.includes(item) ? 'border-2 border-red-300' : ''}`}
                 onClick={() => handleDocClick(item)}
               >
                 {getIcon(item.extension)}

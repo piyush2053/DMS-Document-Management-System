@@ -27,7 +27,10 @@ export const Navbar = () => {
   );
 
   return (
-    <div className='bg-[#007373] flex justify-end p-2'>
+    <div className='bg-[#007373] flex justify-between p-2'>
+      <div className='my-auto'>
+        <p className='my-auto py-auto text-white mx-4'>Hi, {email.split('@')[0] || "User"}</p>
+      </div>
       <Popover content={content} title="User Details" trigger="click">
         <Avatar style={{ backgroundColor: "#004D40", verticalAlign: 'middle' }} size="default" gap={4} className='cursor-pointer hover:shadow-md hover:animate-fade'>
           <UserOutlined />

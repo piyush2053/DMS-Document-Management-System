@@ -32,8 +32,6 @@ export default function Uploads() {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('email', email);
-  
-      // Debugging: Log form data
       Array.from(formData.entries()).forEach(([key, value]) => {
         console.log(key, value);
       });
@@ -64,7 +62,7 @@ export default function Uploads() {
         <Dragger
           fileList={fileList}
           onChange={handleFileChange}
-          beforeUpload={() => false} // Prevent automatic upload by Dragger
+          beforeUpload={() => false} 
           style={{ marginBottom: '16px' }}
         >
           <p className="ant-upload-drag-icon">
@@ -75,9 +73,11 @@ export default function Uploads() {
             Support for a single or bulk upload. Strictly prohibited from uploading suspicious data.
           </p>
         </Dragger>
+        <div className="flex justify-center">
         <Button type="primary" className="bg-[#007373] mt-5" htmlType="submit">
           Submit
         </Button>
+        </div>
       </div>
     </form>
   );
