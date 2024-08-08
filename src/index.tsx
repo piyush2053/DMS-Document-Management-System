@@ -7,6 +7,7 @@ import ErrorPage from './Component/ErrorPage';
 import { EmailProvider } from './Store/Provider';
 import Login from './Component/Login';
 import LayoutS from './Component/Layout/Layout';
+import ProtectedRoute from './Component/Firewall/ProtectedRouting';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -16,14 +17,16 @@ root.render(
   <EmailProvider>
     <BrowserRouter>
       <Routes>
-        <Route path='/dashboard' element={
-          <div>
-            <Navbar />
-            <LayoutS />
-          </div>
+        <Route path="/" element={<Login />} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute element={
+            <div>
+              <Navbar />
+              <LayoutS />
+            </div>
+          } />
         } />
-        <Route path='/' element={<Login />} />
-        <Route path='/*' element={<ErrorPage />} />
+        <Route path="/*" element={<ErrorPage />} />
       </Routes>
     </BrowserRouter>
   </EmailProvider>
