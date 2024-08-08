@@ -108,7 +108,7 @@ const setHandleEditSync = () => {
               </div>
               <div className='my-auto'>
                 <>
-                <Button onClick={setHandleEditSync} className={Handle ? 'mx-4 border-2 border-red-300' : `mx-4`}>Edit Files</Button>
+                <Button onClick={setHandleEditSync} className={Handle ? 'mx-4 border-2 border-red-300' : `mx-4`}>{Handle ? 'Cancel Edit' : 'Edit Files'}</Button>
                 </>
                 {selectedDocs.length > 0 && (
                   <Tooltip title="Delete Selected Files">

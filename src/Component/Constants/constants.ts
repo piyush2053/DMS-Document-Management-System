@@ -19,7 +19,7 @@ export const items = [
   {
     key: '3',
     icon: React.createElement(HistoryOutlined),
-    label: 'DMS Logs',
+    label: 'History',
     path:"/logs"
   },
 ];

@@ -37,9 +37,15 @@ export default function History() {
   const [Logs, setLogs] = useState<LogEntry[]>([]);
 
   const fetchLogs = async () => {
-    const log = await getLogs(email);
-    setLogs(log);
+    try {
+      const log = await getLogs(email);
+      setLogs(Array.isArray(log) ? log : []);
+    } catch (error) {
+      console.error("Error fetching logs:", error);
+      setLogs([]);
+    }
   };
+  
 
   useEffect(() => {
     fetchLogs();
