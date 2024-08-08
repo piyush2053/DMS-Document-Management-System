@@ -1,23 +1,22 @@
 import { useEffect, useState } from 'react';
-import {  DeleteOutlined, FolderOpenFilled, LoadingOutlined } from '@ant-design/icons';
+import { DeleteOutlined, FolderOpenFilled, LoadingOutlined } from '@ant-design/icons';
 import { Button, Divider, Popconfirm, Spin, Tooltip, Typography } from 'antd';
 import { deleteDocuments, getDocuments } from '../Constants/Functions/function';
 import { useEmail } from '../../Store/Provider';
 import { typeDocs } from '../Constants/constants';
 import NoFiles from './Chunks/NoFiles';
-
+import FilePreviewModal from './Chunks/FilePreview';
+import { Document } from '../Constants/constants';
 const { Paragraph } = Typography;
-
-interface Document {
-  name: string;
-  extension: string;
-}
 
 export default function Documents() {
   const { email } = useEmail();
   const [docs, setDocs] = useState<Document[]>(typeDocs);
-  const [Loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [Handle, setHandleEdit] = useState(false);
   const [selectedDocs, setSelectedDocs] = useState<Document[]>([]);
+  const [previewDoc, setPreviewDoc] = useState<Document | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const fetchDocs = async () => {
     const docs = await getDocuments(email);
@@ -61,13 +60,21 @@ export default function Documents() {
   };
 
   const handleDocClick = (doc: Document) => {
-    setSelectedDocs(prevSelectedDocs =>
-      prevSelectedDocs.includes(doc)
-        ? prevSelectedDocs.filter(item => item !== doc)
-        : [...prevSelectedDocs, doc]
-    );
+    if (Handle) {
+      setSelectedDocs(prevSelectedDocs =>
+        prevSelectedDocs.includes(doc)
+          ? prevSelectedDocs.filter(item => item !== doc)
+          : [...prevSelectedDocs, doc]
+      );
+    } else {
+      handlePreview(doc);
+    }
   };
 
+  const handlePreview = (doc: Document) => {
+    setPreviewDoc({ ...doc, content: `../../Server/DB/${email}/${doc.name}${doc.extension}` });
+    setIsModalVisible(true);
+  };
 
   const handleDeleteSelected = async () => {
     setLoading(true);
@@ -76,12 +83,19 @@ export default function Documents() {
       await deleteDocuments(email, fileNames);
       setDocs(prevDocs => prevDocs.filter(doc => !selectedDocs.includes(doc)));
       setSelectedDocs([]);
+      setHandleEdit(false);
     } catch (error) {
       console.error('Failed to delete selected documents');
+      setHandleEdit(false);
     } finally {
       setLoading(false);
+      setHandleEdit(false);
     }
   };
+const setHandleEditSync = () => {
+  setHandleEdit(!Handle);
+  setSelectedDocs([]);
+}
   return (
     <div className='animate-fade'>
       {docs.length > 0 ?
@@ -89,22 +103,25 @@ export default function Documents() {
           <div className='flex mb-1'>
             <div className='flex justify-between'>
               <div className='mr-4'>
-                <Paragraph className='text-[24px] my-auto'>Your Files</Paragraph>
+                <Paragraph className='text-[24px] my-auto'>{Handle ? 'Select Files to delete' : 'Your Files'}</Paragraph>
                 {docs.length > 0 ? null : <>{docs.length === 0 ? null : <Spin className='my-auto ml-4' indicator={<LoadingOutlined spin />} />}</>}
               </div>
               <div className='my-auto'>
+                <>
+                <Button onClick={setHandleEditSync} className={Handle ? 'mx-4 border-2 border-red-300' : `mx-4`}>Edit Files</Button>
+                </>
                 {selectedDocs.length > 0 && (
                   <Tooltip title="Delete Selected Files">
-                  <Popconfirm
-                  title="Delete"
-                  description="Are you sure to delete these files?"
-                  onConfirm={handleDeleteSelected}
-                  okText="Yes"
-                  cancelText="No"
-                >
-                   <Button type="primary"  icon={<DeleteOutlined />} className='bg-red-500' loading={Loading}>{selectedDocs.length}</Button>
-                </Popconfirm>
-                </Tooltip>
+                    <Popconfirm
+                      title="Delete"
+                      description="Are you sure to delete these files?"
+                      onConfirm={handleDeleteSelected}
+                      okText="Yes"
+                      cancelText="No"
+                    >
+                      <Button type="primary" icon={<DeleteOutlined />} className='bg-red-500' loading={loading}>{selectedDocs.length}</Button>
+                    </Popconfirm>
+                  </Tooltip>
                 )}
               </div>
             </div>
@@ -126,10 +143,11 @@ export default function Documents() {
         :
         <NoFiles />
       }
+      <FilePreviewModal
+        visible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        document={previewDoc}
+      />
     </div>
   );
 }
-function setLoading(arg0: boolean) {
-  throw new Error('Function not implemented.');
-}
-

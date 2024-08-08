@@ -3,12 +3,6 @@ import React from "react";
 
 export const URL_SERVICE = "http://localhost:9000"
 
-export const typeDocs = [
-  {
-    "name": "test",
-    "extension": "test"
-} 
-]
 export const items = [
   {
     key: '1',
@@ -157,4 +151,25 @@ export const files = [
     fileName: "Credential Report 25",
     description: "Detailed report for credentials of domain Y"
   }
+];
+
+
+export interface Document {
+  name: string;
+  extension: string;
+  content: string; 
+}
+
+export const typeDocs: Document[] = [
+  {
+    name: 'test',
+    extension: '.pdf',
+    content: 'path/to/test.pdf', // Provide a default or placeholder content
+  },
+  {
+    name: 'example',
+    extension: '.docx',
+    content: 'path/to/example.docx',
+  },
+  // Add more documents as needed
 ];
